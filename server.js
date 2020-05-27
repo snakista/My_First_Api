@@ -30,7 +30,7 @@ var ingredient=[
     
 ];
 
-app.get('/',function(request,response){
+app.get('/ingredients',function(request,response){
     response.send(ingredient);
 });
 app.get('/funions',function(req,res){
@@ -39,17 +39,46 @@ app.get('/funions',function(req,res){
 
 //to post use postman app
 
-app.post('/',function(request,response){
+app.post('/ingredients',function(request,response){
     var ingre=request.body;
-    if(!ingre||ingre.text==="")
-    {
-        response.status(500).send({error:"Your ingredient must have a name"});
-    }
+    if(!ingre||ingre.text=="")
+        {
+            response.status(500).send({error: "Your ingredeint must have text"});
+            
+        }
     else{
         ingredient.push(ingre);
         response.status(200).send(ingredient);
     }
 });
+// working on updates
+//:ingredientId is url parameter whenever we pass id it gets copy into ingredientId variable which we can use
+app.put('/ingredients/:ingredientId',function(request,response){
+    //var ingredientId=request.params.ingredientId;
+    var newText=request.body.text;
+    if(!newText||newText=="")
+        {
+            response.status(500).send({error:"You must provide ingredient text"});
+        }
+    else{
+    for(var x=0;x<ingredient.length;x++)
+        {
+            var objfound=false;
+            var ing=ingredient[x];
+            if(ing.id===request.params.ingredientId){
+                ingredient[x].text=newText;
+                objfound=true;
+                break;
+            }
+        }
+    if(!objfound)
+        response.status(500).send({error:"Ingredient Not Found"});
+    else{
+        response.send(ingredient); //default status is 200 so dont need to write
+    }
+    }
+});
+
 app.listen(3000,function(){
     console.log("First API running on port 3000!");
 });
